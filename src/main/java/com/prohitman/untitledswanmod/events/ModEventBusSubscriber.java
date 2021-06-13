@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.Mod;
 public class ModEventBusSubscriber {
     @SubscribeEvent
     public static void registerEntityAttributes(EntityAttributeCreationEvent event) {
-        event.put(ModEntities.SWAN_ENTITY.get(), SwanEntity.createAttributes().build());
+        event.put(ModEntities.SWAN_ENTITY.get(), SwanEntity.createAttributes().create());
     }
 
     // Thanks To Cadiboo

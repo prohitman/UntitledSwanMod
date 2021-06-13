@@ -14,7 +14,7 @@ public class ModEntities {
 
     public static final RegistryObject<EntityType<SwanEntity>> SWAN_ENTITY = ENTITY_TYPES.register(
             "swan_entity",
-            () -> EntityType.Builder.of(SwanEntity::new, EntityClassification.CREATURE).sized(1.0F, 1.0F)
+            () -> EntityType.Builder.create(SwanEntity::new, EntityClassification.CREATURE).size(1.0F, 1.0F)
                     .build(new ResourceLocation(UntitledSwanMod.MOD_ID, "swan_entity").toString()));
 
 }

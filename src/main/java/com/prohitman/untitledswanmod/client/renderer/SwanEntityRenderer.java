@@ -22,20 +22,20 @@ public class SwanEntityRenderer extends MobRenderer<SwanEntity, SwanModel> {
     }
 
     @Override
-    public void render(SwanEntity p_225623_1_, float p_225623_2_, float p_225623_3_, MatrixStack matrixstack, IRenderTypeBuffer p_225623_5_, int p_225623_6_) {
-        matrixstack.scale(0.75F, 0.75F, 0.75F);
-        super.render(p_225623_1_, p_225623_2_, p_225623_3_, matrixstack, p_225623_5_, p_225623_6_);
+    protected void preRenderCallback(SwanEntity entitylivingbaseIn, MatrixStack matrixStackIn, float partialTickTime) {
+        matrixStackIn.scale(0.75F, 0.75F, 0.75F);
+        super.preRenderCallback(entitylivingbaseIn, matrixStackIn, partialTickTime);
     }
 
-    public ResourceLocation getTextureLocation(SwanEntity entity) {
-        if(!entity.isBaby()){
+    public ResourceLocation getEntityTexture(SwanEntity entity) {
+        if(!entity.isChild()){
             switch (entity.getSwanType()){
 
             case 1:
                 return TEXTURE_BLACK;
             default:
                 return TEXTURE_NORMAL;
-        }
+            }
         }
         else{
             return TEXTURE_BABY;

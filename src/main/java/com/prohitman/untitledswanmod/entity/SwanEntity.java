@@ -31,19 +31,19 @@ import net.minecraft.world.server.ServerWorld;
 import java.util.Random;
 
 public class SwanEntity extends AnimalEntity {
-    private static final DataParameter<Integer> VARIANT = EntityDataManager.defineId(SwanEntity.class, DataSerializers.INT);
+    private static final DataParameter<Integer> VARIANT = EntityDataManager.createKey(SwanEntity.class, DataSerializers.VARINT);
 
-    private static final Ingredient FOOD_ITEMS = Ingredient.of(Items.CARROT, Items.POTATO, Items.BEETROOT, Items.GRASS);
-    public float flap;
-    public float flapSpeed;
+    private static final Ingredient FOOD_ITEMS = Ingredient.fromItems(Items.CARROT, Items.POTATO, Items.BEETROOT, Items.GRASS);
+    public float wingRotation;
+    public float destPos;
     public float oFlapSpeed;
     public float oFlap;
-    public float flapping = 1.0F;
-    public int eggTime = this.random.nextInt(6000) + 6000;
+    public float wingRotDelta = 1.0F;
+    public int timeUntilNextEgg = this.rand.nextInt(6000) + 6000;
 
     public SwanEntity(EntityType<? extends AnimalEntity> p_i48568_1_, World p_i48568_2_) {
         super(p_i48568_1_, p_i48568_2_);
-        this.setPathfindingMalus(PathNodeType.WATER, 0.0F);
+        this.setPathPriority(PathNodeType.WATER, 0.0F);
     }
 
     protected void registerGoals() {
@@ -58,24 +58,24 @@ public class SwanEntity extends AnimalEntity {
     }
 
     public static AttributeModifierMap.MutableAttribute createAttributes() {
-        return MobEntity.createMobAttributes().add(Attributes.MAX_HEALTH, 10.0D).add(Attributes.MOVEMENT_SPEED, 0.25D);
+        return MobEntity.registerAttributes().createMutableAttribute(Attributes.MAX_HEALTH, 10.0D).createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25D);
     }
 
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(VARIANT, 0);
+    protected void registerData() {
+        super.registerData();
+        this.dataManager.register(VARIANT, 0);
     }
 
     public int getSwanType() {
-        return this.entityData.get(VARIANT);
+        return this.dataManager.get(VARIANT);
     }
 
     public void setSwanType(int p_175529_1_) {
-        this.entityData.set(VARIANT, p_175529_1_);
+        this.dataManager.set(VARIANT, p_175529_1_);
     }
 
     @Override
-    public ILivingEntityData finalizeSpawn(IServerWorld p_213386_1_, DifficultyInstance p_213386_2_, SpawnReason p_213386_3_, ILivingEntityData p_213386_4_, CompoundNBT p_213386_5_) {
+    public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, ILivingEntityData spawnDataIn, CompoundNBT dataTag) {
         Random rand = new Random();
         float variantChange = rand.nextFloat();
         if(variantChange <= 0.5F){
@@ -83,74 +83,78 @@ public class SwanEntity extends AnimalEntity {
         }else{
             this.setSwanType(0);
         }
-        return super.finalizeSpawn(p_213386_1_, p_213386_2_, p_213386_3_, p_213386_4_, p_213386_5_);
+        return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
-    protected int getExperienceReward(PlayerEntity p_70693_1_) {
-        return super.getExperienceReward(p_70693_1_);
+    @Override
+    protected int getExperiencePoints(PlayerEntity player) {
+        return super.getExperiencePoints(player);
     }
 
-    public void readAdditionalSaveData(CompoundNBT p_70037_1_) {
-        super.readAdditionalSaveData(p_70037_1_);
-        if (p_70037_1_.contains("EggLayTime")) {
-            this.eggTime = p_70037_1_.getInt("EggLayTime");
+    @Override
+    public void readAdditional(CompoundNBT compound) {
+        super.readAdditional(compound);
+        if (compound.contains("EggLayTime")) {
+            this.timeUntilNextEgg = compound.getInt("EggLayTime");
         }
-        this.setSwanType(p_70037_1_.getInt("SwanType"));
+        this.setSwanType(compound.getInt("SwanType"));
     }
 
-    public void addAdditionalSaveData(CompoundNBT p_213281_1_) {
-        super.addAdditionalSaveData(p_213281_1_);
-        p_213281_1_.putInt("EggLayTime", this.eggTime);
-        p_213281_1_.putInt("RabbitType", this.getSwanType());
+    @Override
+    public void writeAdditional(CompoundNBT compound) {
+        super.writeAdditional(compound);
+        compound.putInt("EggLayTime", this.timeUntilNextEgg);
+        compound.putInt("RabbitType", this.getSwanType());
     }
 
-    public void aiStep() {
-        super.aiStep();
-        this.oFlap = this.flap;
-        this.oFlapSpeed = this.flapSpeed;
-        this.flapSpeed = (float)((double)this.flapSpeed + (double)(this.onGround ? -1 : 4) * 0.3D);
-        this.flapSpeed = MathHelper.clamp(this.flapSpeed, 0.0F, 1.0F);
-        if (!this.onGround && this.flapping < 1.0F) {
-            this.flapping = 1.0F;
+    public void livingTick() {
+        super.livingTick();
+        this.oFlap = this.wingRotation;
+        this.oFlapSpeed = this.destPos;
+        this.destPos = (float)((double)this.destPos + (double)(this.onGround ? -1 : 4) * 0.3D);
+        this.destPos = MathHelper.clamp(this.destPos, 0.0F, 1.0F);
+        if (!this.onGround && this.wingRotDelta < 1.0F) {
+            this.wingRotDelta = 1.0F;
         }
 
-        this.flapping = (float)((double)this.flapping * 0.9D);
-        Vector3d vector3d = this.getDeltaMovement();
+        this.wingRotDelta = (float)((double)this.wingRotDelta * 0.9D);
+        Vector3d vector3d = this.getMotion();
         if (!this.onGround && vector3d.y < 0.0D) {
-            this.setDeltaMovement(vector3d.multiply(1.0D, 0.6D, 1.0D));
+            this.setMotion(vector3d.mul(1.0D, 0.6D, 1.0D));
         }
 
-        this.flap += this.flapping * 2.0F;
-        if (!this.level.isClientSide && this.isAlive() && !this.isBaby() && --this.eggTime <= 0) {
-            this.playSound(SoundEvents.CHICKEN_EGG, 1.0F, (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
-            this.spawnAtLocation(ModItems.SWAN_EGG.get());
-            this.eggTime = this.random.nextInt(6000) + 6000;
+        this.wingRotation += this.wingRotDelta * 2.0F;
+        if (!this.world.isRemote && this.isAlive() && !this.isChild() && --this.timeUntilNextEgg <= 0) {
+            this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
+            this.entityDropItem(Items.EGG);
+            this.timeUntilNextEgg = this.rand.nextInt(6000) + 6000;
         }
 
     }
 
-    public boolean isFood(ItemStack p_70877_1_) {
-        return FOOD_ITEMS.test(p_70877_1_);
+    @Override
+    public boolean isBreedingItem(ItemStack stack) {
+        return FOOD_ITEMS.test(stack);
     }
 
-    public boolean causeFallDamage(float p_225503_1_, float p_225503_2_) {
+    public boolean onLivingFall(float distance, float damageMultiplier) {
         return false;
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.CHICKEN_AMBIENT;
+        return SoundEvents.ENTITY_CHICKEN_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource p_184601_1_) {
-        return SoundEvents.CHICKEN_HURT;
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return SoundEvents.ENTITY_CHICKEN_HURT;
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.CHICKEN_DEATH;
+        return SoundEvents.ENTITY_CHICKEN_DEATH;
     }
 
-    protected void playStepSound(BlockPos p_180429_1_, BlockState p_180429_2_) {
-        this.playSound(SoundEvents.CHICKEN_STEP, 0.15F, 1.0F);
+    protected void playStepSound(BlockPos pos, BlockState state) {
+        this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15F, 1.0F);
     }
 
     @Override
@@ -158,12 +162,13 @@ public class SwanEntity extends AnimalEntity {
         return true;
     }
 
-    protected float getStandingEyeHeight(Pose p_213348_1_, EntitySize p_213348_2_) {
-        return  p_213348_2_.height * 0.92F;
+    protected float getStandingEyeHeight(Pose pose, EntitySize size) {
+        return  size.height * 0.92F;
     }
 
     @Override
-    public AgeableEntity getBreedOffspring(ServerWorld p_241840_1_, AgeableEntity p_241840_2_) {
-        return ModEntities.SWAN_ENTITY.get().create(p_241840_1_);
+    public AgeableEntity createChild(ServerWorld world, AgeableEntity mate) {
+        return ModEntities.SWAN_ENTITY.get().create(world);
     }
+
 }
