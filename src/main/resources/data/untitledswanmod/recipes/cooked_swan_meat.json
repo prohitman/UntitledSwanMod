@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "untitledswanmod:raw_swan_meat"
+  },
+  "result": "untitledswanmod:cooked_swan_meat",
+  "experience": 0.35,
+  "cookingtime": 200
+}
