@@ -19,5 +19,5 @@ public class ModItems {
     public static final RegistryObject<Item> RAW_SWAN_MEAT = ITEMS.register("raw_swan_meat", () -> new Item(new Item.Properties().maxStackSize(64).group(ItemGroup.FOOD).food(new Food.Builder().hunger(2).saturation(0.3F).effect(new EffectInstance(Effects.HUNGER, 600, 0), 0.3F).meat().build())));
     public static final RegistryObject<Item> COOKED_SWAN_MEAT = ITEMS.register("cooked_swan_meat", () -> new Item(new Item.Properties().maxStackSize(64).group(ItemGroup.FOOD).food(new Food.Builder().hunger(6).saturation(0.6F).meat().build())));
 
-    public static final RegistryObject<Item> SWAN_SPAWN_EGG = ITEMS.register("swan_spawn_egg", () -> new ModSpawnEggItem(ModEntities.SWAN_ENTITY, 0xFFFFFF, 0x000000, new Item.Properties().group(ItemGroup.MISC)));
+    public static final RegistryObject<Item> SWAN_SPAWN_EGG = ITEMS.register("swan_spawn_egg", () -> new ModSpawnEggItem(ModEntities.SWAN_ENTITY, 0xFFFFFF, 0xFFAA00, new Item.Properties().group(ItemGroup.MISC)));
 }

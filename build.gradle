@@ -16,7 +16,7 @@ repositories {
     maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
 }
 dependencies {
-    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.16.5:3.0.40')
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.16.5:3.0.41')
 }
 
 version = '0.1'

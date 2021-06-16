@@ -58,7 +58,7 @@ public class SwanEntity extends AnimalEntity {
     }
 
     public static AttributeModifierMap.MutableAttribute createAttributes() {
-        return MobEntity.registerAttributes().createMutableAttribute(Attributes.MAX_HEALTH, 10.0D).createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25D);
+        return MobEntity.registerAttributes().createMutableAttribute(Attributes.MAX_HEALTH, 10.0D).createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25D).createMutableAttribute(Attributes.FOLLOW_RANGE, 10.0D);
     }
 
     protected void registerData() {

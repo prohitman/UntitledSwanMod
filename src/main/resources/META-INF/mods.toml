@@ -62,11 +62,11 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mollis lacinia magn
     side="BOTH"
 [[dependencies.untitledswanmod]] #optional
 # the modid of the dependency
-    modId="geckolib" #mandatory
+    modId="geckolib3" #mandatory
 # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
 # The version range of the dependency
-    versionRange="[3.0.0,)" #mandatory
+    versionRange="[3.0.41,)" #mandatory
 # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
 # Side this dependency is applied on - BOTH, CLIENT or SERVER

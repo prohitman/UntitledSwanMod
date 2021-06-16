@@ -99,12 +99,17 @@ public class SwanModel extends AgeableModel<SwanEntity> {
     public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         if (this.isChild) {
             matrixStackIn.push();
+            float f = 1.0F / 2.0f;
+            matrixStackIn.scale(f, f, f);
+            //matrixStackIn.translate(0.0D, (double)(0.5f / 16.0F), (double)(0.2f / 16.0F));
+            this.getHeadParts().forEach((p_228230_8_) -> {
+                p_228230_8_.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
+            });
+            matrixStackIn.pop();
+            matrixStackIn.push();
             float f1 = 1.0F / 2.0f;
             matrixStackIn.scale(f1, f1, f1);
-            matrixStackIn.translate(0.0D, (double)(5.0F / 16.0F), 0.0D);
-            this.getHeadParts().forEach((p_228228_8_) -> {
-                p_228228_8_.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
-            });
+            //matrixStackIn.translate(0.0D, (double)(0.5f / 16.0F), 0.0D);
             this.getBodyParts().forEach((p_228229_8_) -> {
                 p_228229_8_.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
             });
