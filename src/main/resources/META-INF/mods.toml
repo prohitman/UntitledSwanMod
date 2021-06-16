@@ -60,14 +60,14 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed mollis lacinia magn
     versionRange="[1.16.5]"
     ordering="NONE"
     side="BOTH"
-# [[dependencies.untitledswanmod]] #optional
+[[dependencies.untitledswanmod]] #optional
 # the modid of the dependency
-#    modId="geckolib" #mandatory
+    modId="geckolib" #mandatory
 # Does this dependency have to exist - if not, ordering below must be specified
-#   mandatory=true #mandatory
+    mandatory=true #mandatory
 # The version range of the dependency
-#    versionRange="[3.0.0,)" #mandatory
+    versionRange="[3.0.0,)" #mandatory
 # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
-#    ordering="NONE"
+    ordering="NONE"
 # Side this dependency is applied on - BOTH, CLIENT or SERVER
-#    side="BOTH"
+    side="BOTH"

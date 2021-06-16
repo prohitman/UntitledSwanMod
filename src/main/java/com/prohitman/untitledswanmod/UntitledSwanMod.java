@@ -17,13 +17,13 @@ public class UntitledSwanMod
     public UntitledSwanMod() {
         final IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
-
+        GeckoLib.initialize();
 
         ModEntities.ENTITY_TYPES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
-        GeckoLib.initialize();
+
     }
 
     private void setup(final FMLCommonSetupEvent event)
