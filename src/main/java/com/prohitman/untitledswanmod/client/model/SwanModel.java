@@ -74,9 +74,20 @@ public class SwanModel extends AgeableModel<SwanEntity> {
         right_leg.setTextureOffset(46, 9).addBox(-2.0F, 5.0F, -4.0F, 4.0F, 0.0F, 5.0F, 0.0F, false);
     }
 
-    @Override
+     /**
+     * Sets this entity's model rotation angles
+     */
     public void setRotationAngles(SwanEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        this.head.rotateAngleX = headPitch * ((float)Math.PI / 180F);
+        this.head.rotateAngleY = netHeadYaw * ((float)Math.PI / 180F);
+        this.right_leg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F) * 1.4F * limbSwingAmount;
+        this.left_leg.rotateAngleX = MathHelper.cos(limbSwing * 0.6662F + (float)Math.PI) * 1.4F * limbSwingAmount;
+    }
 
+    public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
+        modelRenderer.rotateAngleX = x;
+        modelRenderer.rotateAngleY = y;
+        modelRenderer.rotateAngleZ = z;
     }
 
     @Override
@@ -89,19 +100,13 @@ public class SwanModel extends AgeableModel<SwanEntity> {
         return ImmutableList.of(this.body, this.left_leg, this.right_leg, this.left_wing, this.right_wing);
     }
 
-    public void setRotationAngle(ModelRenderer modelRenderer, float x, float y, float z) {
-        modelRenderer.rotateAngleX = x;
-        modelRenderer.rotateAngleY = y;
-        modelRenderer.rotateAngleZ = z;
-    }
-
     @Override
     public void render(MatrixStack matrixStackIn, IVertexBuilder bufferIn, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha) {
         if (this.isChild) {
             matrixStackIn.push();
             float f = 1.0F / 2.0f;
             matrixStackIn.scale(f, f, f);
-            //matrixStackIn.translate(0.0D, (double)(0.5f / 16.0F), (double)(0.2f / 16.0F));
+            matrixStackIn.translate(0.0D, 1.5, (double)(0.2f / 16.0F));
             this.getHeadParts().forEach((p_228230_8_) -> {
                 p_228230_8_.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
             });
@@ -109,7 +114,7 @@ public class SwanModel extends AgeableModel<SwanEntity> {
             matrixStackIn.push();
             float f1 = 1.0F / 2.0f;
             matrixStackIn.scale(f1, f1, f1);
-            //matrixStackIn.translate(0.0D, (double)(0.5f / 16.0F), 0.0D);
+            matrixStackIn.translate(0.0D, 1.5 , 0.0D);
             this.getBodyParts().forEach((p_228229_8_) -> {
                 p_228229_8_.render(matrixStackIn, bufferIn, packedLightIn, packedOverlayIn, red, green, blue, alpha);
             });
