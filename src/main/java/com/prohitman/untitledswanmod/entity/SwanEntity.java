@@ -36,7 +36,7 @@ import java.util.Random;
 public class SwanEntity extends AnimalEntity {
     private static final DataParameter<Integer> VARIANT = EntityDataManager.createKey(SwanEntity.class, DataSerializers.VARINT);
 
-    private static final Ingredient FOOD_ITEMS = Ingredient.fromItems(Items.CARROT, Items.POTATO, Items.BEETROOT, Items.GRASS);
+    private static final Ingredient FOOD_ITEMS = Ingredient.fromItems(Items.CARROT, Items.POTATO, Items.BEETROOT, Items.SEAGRASS, Items.KELP);
     public float wingRotation;
     public float destPos;
     public float oFlapSpeed;
@@ -169,17 +169,17 @@ public class SwanEntity extends AnimalEntity {
     @Override
     public void tick() {
         super.tick();
-        this.func_234318_eL_();
+        this.updateFloating();
         this.doBlockCollisions();
     }
 
-    private void func_234318_eL_() {
+    private void updateFloating() {
         if (this.isInWater()) {
             ISelectionContext iselectioncontext = ISelectionContext.forEntity(this);
             if (iselectioncontext.func_216378_a(FlowingFluidBlock.LAVA_COLLISION_SHAPE, this.getPosition(), true) && !this.world.getFluidState(this.getPosition().up()).isTagged(FluidTags.WATER)) {
                 this.onGround = true;
             } else {
-                this.setMotion(this.getMotion().scale(0.5D).add(0.0D, 0.05D, 0.0D));
+                this.setMotion(this.getMotion().scale(0.5D).add(0.0D, 0.05D, 0.0D));//y 0.05D
             }
         }
 
