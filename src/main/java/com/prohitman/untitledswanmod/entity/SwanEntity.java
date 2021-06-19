@@ -2,15 +2,18 @@ package com.prohitman.untitledswanmod.entity;
 
 import com.prohitman.untitledswanmod.init.ModEntities;
 import com.prohitman.untitledswanmod.init.ModItems;
+import com.prohitman.untitledswanmod.init.ModSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.TurtleEntity;
+import net.minecraft.entity.passive.StriderEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
@@ -18,18 +21,14 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.pathfinding.PathNodeType;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EntityPredicates;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.pathfinding.*;
+import net.minecraft.tags.FluidTags;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.world.*;
 import net.minecraft.world.server.ServerWorld;
 
 import java.util.Random;
@@ -61,7 +60,7 @@ public class SwanEntity extends AnimalEntity {
         this.goalSelector.addGoal(4, new SwanEntity.AvoidEntityGoal<>(this, PlayerEntity.class, 4.0F, 1.2D, 1.2D));
         this.goalSelector.addGoal(5, new RandomWalkingGoal(this, 1.0D));
         this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 6.0F));
-        this.goalSelector.addGoal(7, new SwanEntity.GoToWaterGoal(this, 0.75D));
+        this.goalSelector.addGoal(7, new SwanEntity.MoveToWaterGoal(this, 0.75D));
         this.goalSelector.addGoal(7, new LookRandomlyGoal(this));
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, 10, true, true, this::attackPredicate));
     }
@@ -79,8 +78,8 @@ public class SwanEntity extends AnimalEntity {
         return this.dataManager.get(VARIANT);
     }
 
-    public void setSwanType(int p_175529_1_) {
-        this.dataManager.set(VARIANT, p_175529_1_);
+    public void setSwanType(int type) {
+        this.dataManager.set(VARIANT, type);
     }
 
     @Override
@@ -93,6 +92,29 @@ public class SwanEntity extends AnimalEntity {
             this.setSwanType(0);
         }
         return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
+    }
+
+    public static boolean canSpawn(EntityType<SwanEntity> p_234314_0_, IWorld p_234314_1_, SpawnReason p_234314_2_, BlockPos p_234314_3_, Random p_234314_4_) {
+        BlockPos.Mutable blockpos$mutable = p_234314_3_.toMutable();
+
+        do {
+            blockpos$mutable.move(Direction.UP);
+        } while(p_234314_1_.getFluidState(blockpos$mutable).isTagged(FluidTags.WATER));
+
+        return p_234314_1_.getBlockState(blockpos$mutable).isAir();
+    }
+
+    public boolean func_230285_a_(Fluid p_230285_1_) {
+        return p_230285_1_.isIn(FluidTags.WATER);
+    }
+
+    protected void updateFallState(double y, boolean onGroundIn, BlockState state, BlockPos pos) {
+        this.doBlockCollisions();
+        if (this.isInWater()) {
+            this.fallDistance = 0.0F;
+        } else {
+            super.updateFallState(y, onGroundIn, state, pos);
+        }
     }
 
     public boolean attackPredicate(LivingEntity player){
@@ -144,6 +166,63 @@ public class SwanEntity extends AnimalEntity {
         }
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+        this.func_234318_eL_();
+        this.doBlockCollisions();
+    }
+
+    private void func_234318_eL_() {
+        if (this.isInWater()) {
+            ISelectionContext iselectioncontext = ISelectionContext.forEntity(this);
+            if (iselectioncontext.func_216378_a(FlowingFluidBlock.LAVA_COLLISION_SHAPE, this.getPosition(), true) && !this.world.getFluidState(this.getPosition().up()).isTagged(FluidTags.WATER)) {
+                this.onGround = true;
+            } else {
+                this.setMotion(this.getMotion().scale(0.5D).add(0.0D, 0.05D, 0.0D));
+            }
+        }
+
+    }
+
+    /**
+     * Returns new PathNavigateGround instance
+     */
+    protected PathNavigator createNavigator(World worldIn) {
+        return new SwanEntity.WaterPathNavigator(this, worldIn);
+    }
+
+    public float getBlockPathWeight(BlockPos pos, IWorldReader worldIn) {
+        if (worldIn.getBlockState(pos).getFluidState().isTagged(FluidTags.WATER)) {
+            return 10.0F;
+        } else {
+            return this.isInWater() ? Float.NEGATIVE_INFINITY : 0.0F;
+        }
+    }
+
+    public boolean isNotColliding(IWorldReader worldIn) {
+        return worldIn.checkNoEntityCollision(this);
+    }
+
+    static class WaterPathNavigator extends GroundPathNavigator {
+        WaterPathNavigator(SwanEntity p_i231565_1_, World p_i231565_2_) {
+            super(p_i231565_1_, p_i231565_2_);
+        }
+
+        protected PathFinder getPathFinder(int p_179679_1_) {
+            this.nodeProcessor = new WalkNodeProcessor();
+            return new PathFinder(this.nodeProcessor, p_179679_1_);
+        }
+
+        protected boolean func_230287_a_(PathNodeType nodeType) {
+            return nodeType != PathNodeType.WATER ? super.func_230287_a_(nodeType) : true;
+        }
+
+        public boolean canEntityStandOnPos(BlockPos pos) {
+            return this.world.getBlockState(pos).matchesBlock(Blocks.WATER) || super.canEntityStandOnPos(pos);
+        }
+    }
+
     /**
      * Called when the entity is attacked.
      */
@@ -165,19 +244,24 @@ public class SwanEntity extends AnimalEntity {
     }
 
     protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_CHICKEN_AMBIENT;
+        return ModSounds.SWAN_AMBIENT.get();
     }
 
     protected SoundEvent getHurtSound(DamageSource source) {
-        return SoundEvents.ENTITY_CHICKEN_HURT;
+        return ModSounds.SWAN_HURT.get();
     }
 
     protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_CHICKEN_DEATH;
+        return ModSounds.SWAN_DEATH.get();
     }
 
     protected void playStepSound(BlockPos pos, BlockState state) {
-        this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15F, 1.0F);
+        if(!this.isInWater()){
+            this.playSound(SoundEvents.ENTITY_CHICKEN_STEP, 0.15F, 1.0F);
+        }
+        else{
+            this.playSwimSound(0.75f);
+        }
     }
 
     @Override
@@ -216,20 +300,23 @@ public class SwanEntity extends AnimalEntity {
         }
     }
 
-    static class GoToWaterGoal extends MoveToBlockGoal {
+    static class MoveToWaterGoal extends MoveToBlockGoal {
         private final SwanEntity swan;
 
-        private GoToWaterGoal(SwanEntity swan, double speedIn) {
-            super(swan, swan.isChild() ? 2.0D : speedIn, 24);
+        private MoveToWaterGoal(SwanEntity swan, double p_i241913_2_) {
+            super(swan, p_i241913_2_, 8, 2);
             this.swan = swan;
-            this.field_203112_e = 0;
+        }
+
+        public BlockPos func_241846_j() {
+            return this.destinationBlock;
         }
 
         /**
          * Returns whether an in-progress EntityAIBase should continue executing
          */
         public boolean shouldContinueExecuting() {
-            return !this.swan.isInWater() && this.timeoutCounter <= 100 && this.shouldMoveTo(this.swan.world, this.destinationBlock);
+            return !this.swan.isInWater() && this.shouldMoveTo(this.swan.world, this.destinationBlock);
         }
 
         /**
@@ -237,22 +324,18 @@ public class SwanEntity extends AnimalEntity {
          * method as well.
          */
         public boolean shouldExecute() {
-            if (this.swan.isChild() && !this.swan.isInWater()) {
-                return super.shouldExecute();
-            } else {
-                return !this.swan.isInWater() ? super.shouldExecute() : false;
-            }
+            return !this.swan.isInWater() && super.shouldExecute();
         }
 
         public boolean shouldMove() {
-            return this.timeoutCounter % 50 == 0;
+            return this.timeoutCounter % 20 == 0;
         }
 
         /**
          * Return true to set given position as destination
          */
         protected boolean shouldMoveTo(IWorldReader worldIn, BlockPos pos) {
-            return worldIn.getBlockState(pos).matchesBlock(Blocks.WATER);
+            return worldIn.getBlockState(pos).matchesBlock(Blocks.WATER) && worldIn.getBlockState(pos.up()).allowsMovement(worldIn, pos, PathType.LAND);
         }
     }
 }

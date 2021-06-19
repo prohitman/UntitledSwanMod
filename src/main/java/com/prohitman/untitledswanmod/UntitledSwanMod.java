@@ -2,6 +2,7 @@ package com.prohitman.untitledswanmod;
 
 import com.prohitman.untitledswanmod.init.ModEntities;
 import com.prohitman.untitledswanmod.init.ModItems;
+import com.prohitman.untitledswanmod.init.ModSounds;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -21,6 +22,7 @@ public class UntitledSwanMod
 
         ModEntities.ENTITY_TYPES.register(modEventBus);
         ModItems.ITEMS.register(modEventBus);
+        ModSounds.SOUND_EVENTS.register(modEventBus);
 
         MinecraftForge.EVENT_BUS.register(this);
 

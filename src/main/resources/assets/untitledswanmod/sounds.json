@@ -1,0 +1,38 @@
+{
+  "entity.swan.ambient": {
+    "category": "entity",
+    "sounds": [
+      "crittersaroundtheworldmod:entity/fat_seal/fat_seal_land_ambient1",
+      "crittersaroundtheworldmod:entity/fat_seal/fat_seal_land_ambient2",
+      "crittersaroundtheworldmod:entity/fat_seal/fat_seal_land_ambient3"
+    ],
+    "subtitle": "entity.swan.ambient"
+  },
+  "entity.swan.step_water": {
+    "category": "entity",
+    "sounds": [
+      "crittersaroundtheworldmod:entity/fat_seal/fat_seal_water_ambient1",
+      "crittersaroundtheworldmod:entity/fat_seal/fat_seal_water_ambient2",
+      "crittersaroundtheworldmod:entity/fat_seal/fat_seal_water_ambient3"
+    ],
+    "subtitle": "entity.swan.step_water"
+  },
+  "entity.swan.hurt": {
+    "category": "entity",
+    "sounds": [
+      "crittersaroundtheworldmod:entity/fat_seal/fat_seal_hurt1",
+      "crittersaroundtheworldmod:entity/fat_seal/fat_seal_hurt2",
+      "crittersaroundtheworldmod:entity/fat_seal/fat_seal_hurt3"
+    ],
+    "subtitle": "entity.swan.hurt"
+  },
+  "entity.swan.death": {
+    "category": "entity",
+    "sounds": [
+      "crittersaroundtheworldmod:entity/fat_seal/fat_seal_death1",
+      "crittersaroundtheworldmod:entity/fat_seal/fat_seal_death2",
+      "crittersaroundtheworldmod:entity/fat_seal/fat_seal_death3"
+    ],
+    "subtitle": "entity.swan.death"
+  }
+}

@@ -18,7 +18,7 @@ public class SwanEntityRenderer extends MobRenderer<SwanEntity, SwanModel> {
 
 
     public SwanEntityRenderer(EntityRendererManager p_i50961_1_) {
-        super(p_i50961_1_, new SwanModel(), 0.75F);
+        super(p_i50961_1_, new SwanModel(), 0.7F);
     }
 
     @Override
