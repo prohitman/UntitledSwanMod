@@ -20,7 +20,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class SwanEggEntity extends ProjectileItemEntity {
-    public SwanEggEntity(EntityType<SwanEggEntity> entityEntityType, World world) {
+    public SwanEggEntity(EntityType<? extends SwanEggEntity> entityEntityType, World world) {
         super(entityEntityType, world);
     }
 
