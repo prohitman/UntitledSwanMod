@@ -1,6 +1,7 @@
 package com.prohitman.untitledswanmod.init;
 
 import com.prohitman.untitledswanmod.UntitledSwanMod;
+import com.prohitman.untitledswanmod.entity.SwanEggEntity;
 import com.prohitman.untitledswanmod.entity.SwanEntity;
 import net.minecraft.entity.EntityClassification;
 import net.minecraft.entity.EntityType;
@@ -16,5 +17,9 @@ public class ModEntities {
             "swan_entity",
             () -> EntityType.Builder.create(SwanEntity::new, EntityClassification.CREATURE).size(0.75F, 1.25F)
                     .build(new ResourceLocation(UntitledSwanMod.MOD_ID, "swan_entity").toString()));
+    public static final RegistryObject<EntityType<SwanEggEntity>> SWAN_EGG_ENTITY = ENTITY_TYPES.register(
+            "swan_egg_entity",
+            () -> EntityType.Builder.create(SwanEggEntity::new, EntityClassification.MISC).size(0.25F, 0.25F)
+                    .build(new ResourceLocation(UntitledSwanMod.MOD_ID, "swan_egg_entity").toString()));
 
 }

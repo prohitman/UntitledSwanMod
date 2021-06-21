@@ -1,5 +1,6 @@
 package com.prohitman.untitledswanmod.items;
 
+import com.prohitman.untitledswanmod.entity.SwanEggEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.EggEntity;
 import net.minecraft.item.Item;
@@ -25,7 +26,7 @@ public class SwanEggItem extends Item {
         ItemStack itemstack = playerIn.getHeldItem(handIn);
         worldIn.playSound((PlayerEntity)null, playerIn.getPosX(), playerIn.getPosY(), playerIn.getPosZ(), SoundEvents.ENTITY_EGG_THROW, SoundCategory.PLAYERS, 0.5F, 0.4F / (random.nextFloat() * 0.4F + 0.8F));
         if (!worldIn.isRemote) {
-            EggEntity eggentity = new EggEntity(worldIn, playerIn);
+            SwanEggEntity eggentity = new SwanEggEntity(worldIn, playerIn);
             eggentity.setItem(itemstack);
             eggentity.setDirectionAndMovement(playerIn, playerIn.rotationPitch, playerIn.rotationYaw, 0.0F, 1.5F, 1.0F);
             worldIn.addEntity(eggentity);
