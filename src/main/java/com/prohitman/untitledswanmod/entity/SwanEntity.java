@@ -30,11 +30,34 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.*;
 import net.minecraft.world.server.ServerWorld;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import java.util.Random;
 
-public class SwanEntity extends AnimalEntity {
+public class SwanEntity extends AnimalEntity implements IAnimatable {
+
+    private final AnimationFactory factory = new AnimationFactory(this);
+
+    private static final AnimationBuilder WALK_ANIM = new AnimationBuilder().addAnimation("animation.swan.walk", true);
+    private static final AnimationBuilder SWIM_ANIM = new AnimationBuilder().addAnimation("animation.swan.swim", true);
+    private static final AnimationBuilder CHARGE_ANIM = new AnimationBuilder().addAnimation("animation.swan.charge", true);
+    private static final AnimationBuilder RUN_ANIM = new AnimationBuilder().addAnimation("animation.swan.run", true);
+    private static final AnimationBuilder INTIMIDATION_ANIM = new AnimationBuilder().addAnimation("animation.swan.intimidation", true);
+    private static final AnimationBuilder IDLE_ANIM = new AnimationBuilder().addAnimation("animation.swan.idle", true);
+
+    public static final byte ANIMATION_IDLE = 0;
+    public static final byte ANIMATION_CLEAN = 1;
+    public static final byte ANIMATION_INTIMIDATE = 6;
+
+
     private static final DataParameter<Integer> VARIANT = EntityDataManager.createKey(SwanEntity.class, DataSerializers.VARINT);
+    protected static final DataParameter<Byte> ANIMATION = EntityDataManager.createKey(SwanEntity.class, DataSerializers.BYTE);
 
     private static final Ingredient FOOD_ITEMS = Ingredient.fromItems(Items.CARROT, Items.POTATO, Items.BEETROOT, Items.SEAGRASS, Items.KELP);
     public float wingRotation;
@@ -43,6 +66,7 @@ public class SwanEntity extends AnimalEntity {
     public float oFlap;
     public float wingRotDelta = 1.0F;
     public int timeUntilNextEgg = this.rand.nextInt(6000) + 6000;
+    public int animationTimer = 0;
 
     public SwanEntity(EntityType<? extends AnimalEntity> entity, World world) {
         super(entity, world);
@@ -66,12 +90,13 @@ public class SwanEntity extends AnimalEntity {
     }
 
     public static AttributeModifierMap.MutableAttribute createAttributes() {
-        return MobEntity.registerAttributes().createMutableAttribute(Attributes.MAX_HEALTH, 10.0D).createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.25D).createMutableAttribute(Attributes.ATTACK_KNOCKBACK, 0.5D).createMutableAttribute(Attributes.ATTACK_DAMAGE, 2.0D).createMutableAttribute(Attributes.FOLLOW_RANGE, 10.0D);
+        return MobEntity.registerAttributes().createMutableAttribute(Attributes.MAX_HEALTH, 10.0D).createMutableAttribute(Attributes.MOVEMENT_SPEED, 0.3D).createMutableAttribute(Attributes.ATTACK_KNOCKBACK, 0.5D).createMutableAttribute(Attributes.ATTACK_DAMAGE, 2.0D).createMutableAttribute(Attributes.FOLLOW_RANGE, 10.0D);
     }
 
     protected void registerData() {
         super.registerData();
         this.dataManager.register(VARIANT, 0);
+        this.dataManager.register(ANIMATION, ANIMATION_IDLE);
     }
 
     public int getSwanType() {
@@ -80,6 +105,14 @@ public class SwanEntity extends AnimalEntity {
 
     public void setSwanType(int type) {
         this.dataManager.set(VARIANT, type);
+    }
+
+    public byte getAnimation() {
+        return this.dataManager.get(ANIMATION);
+    }
+
+    public void setAnimation(byte animation) {
+        this.dataManager.set(ANIMATION, animation);
     }
 
     @Override
@@ -171,6 +204,17 @@ public class SwanEntity extends AnimalEntity {
         super.tick();
         this.updateFloating();
         this.doBlockCollisions();
+
+        // Tick animation timer
+        if (animationTimer > 0) {
+            animationTimer--;
+            if (animationTimer == 0) {
+                setAnimation(ANIMATION_IDLE);
+            }
+        }
+        if(this.isAggressive()){
+            this.setAIMoveSpeed(2.0F);
+        }
     }
 
     private void updateFloating() {
@@ -203,6 +247,53 @@ public class SwanEntity extends AnimalEntity {
     public boolean isNotColliding(IWorldReader worldIn) {
         return worldIn.checkNoEntityCollision(this);
     }
+
+    @Override
+    public void registerControllers(AnimationData data) {
+        data.addAnimationController(new AnimationController(this, "controller", 2, this::predicate));
+    }
+
+    @Override
+    public AnimationFactory getFactory() {
+        return this.factory;
+    }
+
+    @SuppressWarnings("rawtypes")
+    private <P extends IAnimatable> PlayState predicate(AnimationEvent<P> event) {
+        float limbSwingAmount = event.getLimbSwingAmount();
+        boolean isMoving = !(limbSwingAmount > -0.05F && limbSwingAmount < 0.05F);
+        boolean inWater = isInWater();
+        AnimationController controller = event.getController();
+/*        if (isFlapping) {
+            controller.setAnimation(FLY_ANIM);
+            return PlayState.CONTINUE;
+        }*/
+
+        byte currentAnimation = this.getAnimation();
+        switch (currentAnimation) {
+
+            case ANIMATION_INTIMIDATE:
+                controller.setAnimation(INTIMIDATION_ANIM);
+                break;
+            default:
+                if (inWater) {
+                    controller.setAnimation(isMoving ? SWIM_ANIM : IDLE_ANIM);
+                } else {
+                    if (isAggressive()) {
+                        controller.setAnimation(CHARGE_ANIM);
+                    }
+                    else {
+                    controller.setAnimation(isMoving ? WALK_ANIM : IDLE_ANIM);
+                    }
+                    return PlayState.CONTINUE;
+                }
+                break;
+        }
+
+        return PlayState.CONTINUE;
+    }
+
+
 
     static class WaterPathNavigator extends GroundPathNavigator {
         WaterPathNavigator(SwanEntity p_i231565_1_, World p_i231565_2_) {

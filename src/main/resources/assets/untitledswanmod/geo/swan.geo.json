@@ -1,0 +1,114 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.swan",
+				"texture_width": 64,
+				"texture_height": 64,
+				"visible_bounds_width": 3,
+				"visible_bounds_height": 3.5,
+				"visible_bounds_offset": [0, 1.25, 0]
+			},
+			"bones": [
+				{
+					"name": "body",
+					"pivot": [0, 10, 0],
+					"rotation": [-15.00004, 0, 0],
+					"cubes": [
+						{"origin": [-5, 5.75496, -7.86129], "size": [10, 9, 16], "uv": [0, 39]}
+					]
+				},
+				{
+					"name": "tail",
+					"parent": "body",
+					"pivot": [0.5, 10.75496, 6.63871]
+				},
+				{
+					"name": "cube_r1",
+					"parent": "tail",
+					"pivot": [0.5, 10.75496, 6.63871],
+					"rotation": [20.00196, 0, 0],
+					"cubes": [
+						{"origin": [-4.5, 7.75496, 6.63871], "size": [9, 6, 7], "uv": [0, 25]}
+					]
+				},
+				{
+					"name": "right_wing",
+					"parent": "body",
+					"pivot": [5, 15, -4],
+					"rotation": [12.5, 0, 0],
+					"cubes": [
+						{"origin": [5, 6, -6], "size": [1, 9, 15], "uv": [32, 14]}
+					]
+				},
+				{
+					"name": "left_wing",
+					"parent": "body",
+					"pivot": [-5, 15, -4],
+					"rotation": [12.5, 0, 0],
+					"cubes": [
+						{"origin": [-6, 6, -6], "size": [1, 9, 15], "uv": [32, 14]}
+					]
+				},
+				{
+					"name": "legs",
+					"parent": "body",
+					"pivot": [0, 6.5, 2.25],
+					"rotation": [15, 0, 0]
+				},
+				{
+					"name": "left_leg",
+					"parent": "legs",
+					"pivot": [-3, 6.5, 2.25],
+					"cubes": [
+						{"origin": [-4, 0.5, 1.25], "size": [2, 6, 2], "uv": [56, 0]}
+					]
+				},
+				{
+					"name": "leftfoot",
+					"parent": "left_leg",
+					"pivot": [-3, 0.5, 2.25],
+					"cubes": [
+						{"origin": [-5, 0.5, -1.75], "size": [4, 0, 5], "uv": [46, 9]}
+					]
+				},
+				{
+					"name": "right_leg",
+					"parent": "legs",
+					"pivot": [3, 6.5, 2.25],
+					"cubes": [
+						{"origin": [2, 0.5, 1.25], "size": [2, 6, 2], "uv": [56, 0]}
+					]
+				},
+				{
+					"name": "rightfoot",
+					"parent": "right_leg",
+					"pivot": [3, 0.5, 2.25],
+					"cubes": [
+						{"origin": [1, 0.5, -1.75], "size": [4, 0, 5], "uv": [46, 9]}
+					]
+				},
+				{
+					"name": "cube_r2",
+					"parent": "body",
+					"pivot": [0, 12, -7.5],
+					"rotation": [-7.50005, 0, 0],
+					"cubes": [
+						{"origin": [-2, 11.80866, -10.96194], "size": [4, 17, 4], "uv": [29, 0]}
+					]
+				},
+				{
+					"name": "head",
+					"parent": "cube_r2",
+					"pivot": [0, 27.25, -9],
+					"rotation": [22.5, 0, 0],
+					"cubes": [
+						{"origin": [-2.5, 27.30604, -13.03858], "size": [5, 4, 6], "uv": [0, 0]},
+						{"origin": [-1.5, 27.30604, -17.03858], "size": [3, 2, 4], "uv": [0, 14]}
+					]
+				}
+			]
+		}
+	]
+}

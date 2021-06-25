@@ -10,6 +10,7 @@ import net.minecraft.entity.projectile.EggEntity;
 import net.minecraft.entity.projectile.ProjectileItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
+import net.minecraft.network.IPacket;
 import net.minecraft.particles.ItemParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.util.DamageSource;
@@ -18,6 +19,7 @@ import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class SwanEggEntity extends ProjectileItemEntity {
     public SwanEggEntity(EntityType<? extends SwanEggEntity> entityEntityType, World world) {
@@ -30,6 +32,11 @@ public class SwanEggEntity extends ProjectileItemEntity {
 
     public SwanEggEntity(World worldIn, double x, double y, double z) {
         super(ModEntities.SWAN_EGG_ENTITY.get(), x, y, z, worldIn);
+    }
+
+    @Override
+    public IPacket<?> createSpawnPacket() {
+        return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     /**
