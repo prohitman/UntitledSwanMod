@@ -71,7 +71,6 @@ public class IntimidateGoal extends Goal {
             if (delayTime == 0) {
                 swan.getNavigator().clearPath();
                 swan.setAnimation(SwanEntity.ANIMATION_INTIMIDATE);
-                //swan.playSound(ModSoundEvents.getswanHonkSound(), 1.0f, 1.0f);
             }
             return;
         }

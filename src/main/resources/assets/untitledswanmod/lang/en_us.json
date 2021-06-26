@@ -6,5 +6,7 @@
   "item.untitledswanmod.raw_swan_meat": "Raw Swan",
   "item.untitledswanmod.cooked_swan_meat": "Cooked Swan",
   "item.untitledswanmod.swan_spawn_egg": "Swan Spawn Egg",
-  "item.untitledswanmod.swan_egg": "Swan Egg"
+  "item.untitledswanmod.swan_egg": "Swan Egg",
+
+  "entity.untitledswanmod.swan_entity": "Swan"
 }

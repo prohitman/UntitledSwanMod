@@ -14,7 +14,7 @@ public class ForgeEventBusSubscriber {
     public static void scareRavager(LivingSpawnEvent event) {
         if (event.getEntityLiving() instanceof RavagerEntity) {
             RavagerEntity ravagerEntity = (RavagerEntity) event.getEntityLiving();
-            ravagerEntity.goalSelector.addGoal(8, new AvoidEntityGoal<>(ravagerEntity, SwanEntity.class, 6.0F, 1.2D, 1.2D));
+            ravagerEntity.goalSelector.addGoal(12, new AvoidEntityGoal<>(ravagerEntity, SwanEntity.class, 12.0F, 1.2D, 1.2D));
             ravagerEntity.getCollisionBorderSize();
         }
     }
