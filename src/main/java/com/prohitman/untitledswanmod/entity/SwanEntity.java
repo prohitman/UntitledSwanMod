@@ -1,5 +1,6 @@
 package com.prohitman.untitledswanmod.entity;
 
+import com.prohitman.untitledswanmod.entity.goals.IntimidateGoal;
 import com.prohitman.untitledswanmod.init.ModEntities;
 import com.prohitman.untitledswanmod.init.ModItems;
 import com.prohitman.untitledswanmod.init.ModSounds;
@@ -84,6 +85,8 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
         this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 6.0F));
         this.goalSelector.addGoal(7, new SwanEntity.MoveToWaterGoal(this, 0.75D));
         this.goalSelector.addGoal(7, new LookRandomlyGoal(this));
+        this.goalSelector.addGoal(8, new IntimidateGoal(this));
+        this.targetSelector.addGoal(4, (new HurtByTargetGoal(this)).setCallsForHelp());
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, 10, true, true, this::attackPredicate));
     }
 
@@ -195,13 +198,13 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
             this.entityDropItem(ModItems.SWAN_EGG.get());
             this.timeUntilNextEgg = this.rand.nextInt(6000) + 6000;
         }
-        RavagerEntity ravagerEntity = this.world.getClosestEntity(RavagerEntity.class, new EntityPredicate(), this, this.getPosX(), this.getPosY(), this.getPosZ(), this.getBoundingBox().expand(6, 3, 6));
+        /*RavagerEntity ravagerEntity = this.world.getClosestEntity(RavagerEntity.class, new EntityPredicate(), this, this.getPosX(), this.getPosY(), this.getPosZ(), this.getBoundingBox().expand(6, 3, 6));
         if(!this.isAggressive() && ravagerEntity != null) {
 
             if (this.getDistanceSq(ravagerEntity) < 6.0D) {
                 this.setAnimation(ANIMATION_INTIMIDATE);
             }
-        }
+        }*/
     }
 
     @Override
