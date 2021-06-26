@@ -10,6 +10,7 @@ import net.minecraft.entity.*;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.monster.RavagerEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -193,6 +194,13 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
             this.playSound(SoundEvents.ENTITY_CHICKEN_EGG, 1.0F, (this.rand.nextFloat() - this.rand.nextFloat()) * 0.2F + 1.0F);
             this.entityDropItem(ModItems.SWAN_EGG.get());
             this.timeUntilNextEgg = this.rand.nextInt(6000) + 6000;
+        }
+        RavagerEntity ravagerEntity = this.world.getClosestEntity(RavagerEntity.class, new EntityPredicate(), this, this.getPosX(), this.getPosY(), this.getPosZ(), this.getBoundingBox().expand(6, 3, 6));
+        if(!this.isAggressive() && ravagerEntity != null) {
+
+            if (this.getDistanceSq(ravagerEntity) < 6.0D) {
+                this.setAnimation(ANIMATION_INTIMIDATE);
+            }
         }
     }
 
