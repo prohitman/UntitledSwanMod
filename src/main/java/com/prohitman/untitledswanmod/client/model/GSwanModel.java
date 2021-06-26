@@ -51,17 +51,17 @@ public class GSwanModel extends AnimatedGeoModel<SwanEntity> {
                 body.setScaleX(0.5f);
                 body.setScaleY(0.5f);
                 body.setScaleZ(0.5f);
-                body.setPositionY(-3.0f);
+                body.setPositionY(-5.22f);
             }
         }
 
         IBone head = this.getAnimationProcessor().getBone("cube_r2");
-        if (head != null && !entity.isAggressive()) {
+        if (head != null) {
             EntityModelData extraData = (EntityModelData) customPredicate.getExtraDataOfType(EntityModelData.class).get(0);
-
-            head.setRotationX(extraData.headPitch * ((float) Math.PI / 180F));
+            if (!entity.isAggressive()) {
+                head.setRotationX(extraData.headPitch * ((float) Math.PI / 180F));
+            }
             head.setRotationY(extraData.netHeadYaw * ((float) Math.PI / 180F));
-
         }
     }
 }

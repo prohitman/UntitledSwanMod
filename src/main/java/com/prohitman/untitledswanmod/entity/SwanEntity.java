@@ -11,7 +11,6 @@ import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.passive.StriderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
@@ -74,11 +73,9 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
     }
 
     protected void registerGoals() {
-        //this.goalSelector.addGoal(0, new SwimGoal(this));
-        //this.goalSelector.addGoal(1, new PanicGoal(this, 1.4D));
         this.goalSelector.addGoal(2, new BreedGoal(this, 1.0D));
         this.goalSelector.addGoal(3, new TemptGoal(this, 1.0D, false, FOOD_ITEMS));
-        this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 0.75D, false));
+        this.goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(3, new SwimGoal(this));
         this.goalSelector.addGoal(4, new FollowParentGoal(this, 1.1D));
         this.goalSelector.addGoal(4, new SwanEntity.AvoidEntityGoal<>(this, PlayerEntity.class, 4.0F, 1.2D, 1.2D));
@@ -212,9 +209,7 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
                 setAnimation(ANIMATION_IDLE);
             }
         }
-        if(this.isAggressive()){
-            this.setAIMoveSpeed(2.0F);
-        }
+        
     }
 
     private void updateFloating() {
@@ -335,15 +330,22 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
     }
 
     protected SoundEvent getAmbientSound() {
-        return ModSounds.SWAN_AMBIENT.get();
+        int i = this.rand.nextInt(10);
+        if(i == 0 && !this.isAggressive()){
+            this.playSound(ModSounds.SWAN_AMBIENT.get(), 0.25F, 1.0F);
+            return null;
+        }
+        return null;
     }
 
     protected SoundEvent getHurtSound(DamageSource source) {
-        return ModSounds.SWAN_HURT.get();
+        this.playSound(ModSounds.SWAN_HURT.get(), 0.75F, 1.0F);
+        return null;
     }
 
     protected SoundEvent getDeathSound() {
-        return ModSounds.SWAN_DEATH.get();
+        this.playSound(ModSounds.SWAN_DEATH.get(), 0.5F, 1.0F);
+        return null;
     }
 
     protected void playStepSound(BlockPos pos, BlockState state) {
