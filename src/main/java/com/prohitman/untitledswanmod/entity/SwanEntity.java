@@ -218,7 +218,8 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
             if (iselectioncontext.func_216378_a(FlowingFluidBlock.LAVA_COLLISION_SHAPE, this.getPosition(), true) && !this.world.getFluidState(this.getPosition().up()).isTagged(FluidTags.WATER)) {
                 this.onGround = true;
             } else {
-                this.setMotion(this.getMotion().scale(0.5D).add(0.0D, 0.05D, 0.0D));//y 0.05D
+                double d1 = this.isChild() ? 0.0D : 0.5D;
+                this.setMotion(this.getMotion().scale(d1).add(0.0D, 0.05D, 0.0D));//y 0.05D
             }
         }
 

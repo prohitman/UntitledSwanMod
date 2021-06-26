@@ -21,15 +21,9 @@ public class GSwanEntityRenderer extends GeoEntityRenderer<SwanEntity> {
     }
 
     @Override
-    public void renderEarly(SwanEntity animatable, MatrixStack stackIn, float ticks, IRenderTypeBuffer renderTypeBuffer, IVertexBuilder vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float partialTicks) {
-        stackIn.scale(0.75F, 0.75F, 0.75F);
-        super.renderEarly(animatable, stackIn, ticks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue, partialTicks);
-    }
-
-    public ResourceLocation getEntityTexture(SwanEntity entity) {
-        if(!entity.isChild()){
-            switch (entity.getSwanType()){
-
+    public ResourceLocation getEntityTexture(SwanEntity swanEntity) {
+        if(!swanEntity.isChild()){
+            switch (swanEntity.getSwanType()){
                 case 1:
                     return TEXTURE_BLACK;
                 default:
@@ -40,4 +34,17 @@ public class GSwanEntityRenderer extends GeoEntityRenderer<SwanEntity> {
             return TEXTURE_BABY;
         }
     }
+
+    @Override
+    public void renderEarly(SwanEntity animatable, MatrixStack stackIn, float ticks, IRenderTypeBuffer renderTypeBuffer, IVertexBuilder vertexBuilder, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float partialTicks) {
+
+        super.renderEarly(animatable, stackIn, ticks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue, partialTicks);
+        float scale = animatable.isChild() ? 0.5F : 0.75F;
+        stackIn.scale(scale, scale, scale);
+        if(animatable.isChild()){
+           // stackIn.translate(0.0F, 0.0F, 0.0F);
+        }
+    }
+
+
 }

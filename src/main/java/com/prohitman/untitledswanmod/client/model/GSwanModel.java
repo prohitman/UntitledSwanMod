@@ -45,15 +45,6 @@ public class GSwanModel extends AnimatedGeoModel<SwanEntity> {
     @Override
     public void setLivingAnimations(SwanEntity entity, Integer uniqueID, AnimationEvent customPredicate) {
         super.setLivingAnimations(entity, uniqueID, customPredicate);
-        if (entity.isChild()) {
-            IBone body = this.getAnimationProcessor().getBone("body");
-            if (body != null) {
-                body.setScaleX(0.5f);
-                body.setScaleY(0.5f);
-                body.setScaleZ(0.5f);
-                body.setPositionY(-5.22f);
-            }
-        }
 
         IBone head = this.getAnimationProcessor().getBone("cube_r2");
         if (head != null) {
