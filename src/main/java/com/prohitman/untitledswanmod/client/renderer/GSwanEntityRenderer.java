@@ -7,9 +7,8 @@ import com.prohitman.untitledswanmod.entity.SwanEntity;
 import net.minecraft.client.renderer.IRenderTypeBuffer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.util.ResourceLocation;
-import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
-public class GSwanEntityRenderer extends GeoEntityRenderer<SwanEntity> {
+public class GSwanEntityRenderer extends GeoMobRenderer<SwanEntity> {
     private static final ResourceLocation TEXTURE_NORMAL = new ResourceLocation("untitledswanmod:textures/entity/swan.png");
     private static final ResourceLocation TEXTURE_BLACK = new ResourceLocation("untitledswanmod:textures/entity/black_swan.png");
     private static final ResourceLocation TEXTURE_BABY = new ResourceLocation("untitledswanmod:textures/entity/baby_swan.png");
@@ -41,10 +40,5 @@ public class GSwanEntityRenderer extends GeoEntityRenderer<SwanEntity> {
         super.renderEarly(animatable, stackIn, ticks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn, red, green, blue, partialTicks);
         float scale = animatable.isChild() ? 0.5F : 0.75F;
         stackIn.scale(scale, scale, scale);
-        if(animatable.isChild()){
-           // stackIn.translate(0.0F, 0.0F, 0.0F);
-        }
     }
-
-
 }

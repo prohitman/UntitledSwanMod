@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.entity.*;
+import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.ai.attributes.AttributeModifierMap;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.*;
@@ -39,6 +40,7 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
+import java.util.List;
 import java.util.Random;
 
 public class SwanEntity extends AnimalEntity implements IAnimatable {
@@ -59,6 +61,7 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
 
     private static final DataParameter<Integer> VARIANT = EntityDataManager.createKey(SwanEntity.class, DataSerializers.VARINT);
     protected static final DataParameter<Byte> ANIMATION = EntityDataManager.createKey(SwanEntity.class, DataSerializers.BYTE);
+    private static final DataParameter<Boolean> INTIMIDATING = EntityDataManager.createKey(SwanEntity.class, DataSerializers.BOOLEAN);
 
     private static final Ingredient FOOD_ITEMS = Ingredient.fromItems(Items.CARROT, Items.POTATO, Items.BEETROOT, Items.SEAGRASS, Items.KELP);
     public float wingRotation;
@@ -81,11 +84,11 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
         this.goalSelector.addGoal(3, new SwimGoal(this));
         this.goalSelector.addGoal(4, new FollowParentGoal(this, 1.1D));
         this.goalSelector.addGoal(4, new SwanEntity.AvoidEntityGoal<>(this, PlayerEntity.class, 4.0F, 1.2D, 1.2D));
-        this.goalSelector.addGoal(5, new RandomWalkingGoal(this, 1.0D));
         this.goalSelector.addGoal(6, new LookAtGoal(this, PlayerEntity.class, 6.0F));
+        this.goalSelector.addGoal(7, new RandomWalkingGoal(this, 1.0D, 60));
         this.goalSelector.addGoal(7, new SwanEntity.MoveToWaterGoal(this, 0.75D));
         this.goalSelector.addGoal(7, new LookRandomlyGoal(this));
-        this.goalSelector.addGoal(8, new IntimidateGoal(this));
+        this.goalSelector.addGoal(10, new IntimidateGoal(this));
         this.targetSelector.addGoal(4, (new HurtByTargetGoal(this)).setCallsForHelp());
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, 10, true, true, this::attackPredicate));
     }
@@ -97,6 +100,7 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
     protected void registerData() {
         super.registerData();
         this.dataManager.register(VARIANT, 0);
+        this.dataManager.register(INTIMIDATING, false);
         this.dataManager.register(ANIMATION, ANIMATION_IDLE);
     }
 
@@ -115,6 +119,10 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
     public void setAnimation(byte animation) {
         this.dataManager.set(ANIMATION, animation);
     }
+
+    public boolean isIntimidating(){ return this.dataManager.get(INTIMIDATING); }
+
+    public void setIntimidating(boolean intimidating){ this.dataManager.set(INTIMIDATING, intimidating); }
 
     @Override
     public ILivingEntityData onInitialSpawn(IServerWorld worldIn, DifficultyInstance difficultyIn, SpawnReason reason, ILivingEntityData spawnDataIn, CompoundNBT dataTag) {
@@ -138,8 +146,8 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
         return p_234314_1_.getBlockState(blockpos$mutable).isAir();
     }
 
-    public boolean func_230285_a_(Fluid p_230285_1_) {
-        return p_230285_1_.isIn(FluidTags.WATER);
+    public boolean func_230285_a_(Fluid fluidIn) {
+        return fluidIn.isIn(FluidTags.WATER);
     }
 
     protected void updateFallState(double y, boolean onGroundIn, BlockState state, BlockPos pos) {
@@ -220,7 +228,18 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
                 setAnimation(ANIMATION_IDLE);
             }
         }
-        
+
+        if(this.isIntimidating()){
+            List<RavagerEntity> list = this.world.getEntitiesWithinAABB(RavagerEntity.class, this.getBoundingBox().grow(16, 8, 16));
+            for (RavagerEntity e : list) {
+                e.setAttackTarget(null);
+                e.setRevengeTarget(null);
+                Vector3d vec = RandomPositionGenerator.findRandomTargetBlockAwayFrom(e, 20, 7, this.getPositionVec());
+                if(vec != null){
+                    e.getNavigator().tryMoveToXYZ(vec.x, vec.y, vec.z, 1.5D);
+                }
+            }
+        }
     }
 
     private void updateFloating() {
@@ -230,7 +249,7 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
                 this.onGround = true;
             } else {
                 double d1 = this.isChild() ? 0.0D : 0.5D;
-                this.setMotion(this.getMotion().scale(d1).add(0.0D, 0.05D, 0.0D));//y 0.05D
+                this.setMotion(this.getMotion().scale(d1).add(0.0D, 0.05D, 0.0D));
             }
         }
 
@@ -239,6 +258,7 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
     /**
      * Returns new PathNavigateGround instance
      */
+    @Override
     protected PathNavigator createNavigator(World worldIn) {
         return new SwanEntity.WaterPathNavigator(this, worldIn);
     }
@@ -313,7 +333,7 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
         }
 
         protected boolean func_230287_a_(PathNodeType nodeType) {
-            return nodeType != PathNodeType.WATER ? super.func_230287_a_(nodeType) : true;
+            return nodeType == PathNodeType.WATER || super.func_230287_a_(nodeType);
         }
 
         public boolean canEntityStandOnPos(BlockPos pos) {
@@ -325,7 +345,7 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
      * Called when the entity is attacked.
      */
     public boolean attackEntityFrom(DamageSource source, float amount) {
-        if (this.isInvulnerableTo(source)) {
+        if (this.isInvulnerableTo(source) || this.isChild()) {
             return false;
         } else {
             return super.attackEntityFrom(source, amount);
@@ -386,6 +406,11 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
     @Override
     public boolean canDespawn(double distanceToClosestPlayer) {
         return false;
+    }
+
+    @Override
+    public void applyEntityCollision(Entity entityIn) {
+        super.applyEntityCollision(entityIn);
     }
 
     static class AvoidEntityGoal<T extends LivingEntity> extends net.minecraft.entity.ai.goal.AvoidEntityGoal<T> {
