@@ -1,6 +1,7 @@
 package com.prohitman.untitledswanmod.entity;
 
 import com.prohitman.untitledswanmod.entity.goals.IntimidateGoal;
+import com.prohitman.untitledswanmod.entity.goals.SwanHurtByTargetGoal;
 import com.prohitman.untitledswanmod.init.ModEntities;
 import com.prohitman.untitledswanmod.init.ModItems;
 import com.prohitman.untitledswanmod.init.ModSounds;
@@ -89,7 +90,7 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
         this.goalSelector.addGoal(7, new SwanEntity.MoveToWaterGoal(this, 0.75D));
         this.goalSelector.addGoal(7, new LookRandomlyGoal(this));
         this.goalSelector.addGoal(10, new IntimidateGoal(this));
-        this.targetSelector.addGoal(4, (new HurtByTargetGoal(this)).setCallsForHelp());
+        this.targetSelector.addGoal(4, (new SwanHurtByTargetGoal(this)).setCallsForHelp());
         this.targetSelector.addGoal(5, new NearestAttackableTargetGoal<>(this, PlayerEntity.class, 10, true, true, this::attackPredicate));
     }
 
@@ -338,7 +339,7 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
      * Called when the entity is attacked.
      */
     public boolean attackEntityFrom(DamageSource source, float amount) {
-        if (this.isInvulnerableTo(source) || this.isChild()) {
+        if (this.isInvulnerableTo(source)) {
             return false;
         } else {
             return super.attackEntityFrom(source, amount);
