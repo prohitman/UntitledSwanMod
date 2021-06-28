@@ -206,13 +206,6 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
             this.entityDropItem(ModItems.SWAN_EGG.get());
             this.timeUntilNextEgg = this.rand.nextInt(6000) + 6000;
         }
-        /*RavagerEntity ravagerEntity = this.world.getClosestEntity(RavagerEntity.class, new EntityPredicate(), this, this.getPosX(), this.getPosY(), this.getPosZ(), this.getBoundingBox().expand(6, 3, 6));
-        if(!this.isAggressive() && ravagerEntity != null) {
-
-            if (this.getDistanceSq(ravagerEntity) < 6.0D) {
-                this.setAnimation(ANIMATION_INTIMIDATE);
-            }
-        }*/
     }
 
     @Override
