@@ -134,6 +134,8 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
         }else{
             this.setSwanType(0);
         }
+
+        this.setPosition(this.getPosX() + 0.01, this.getPosY(), this.getPosZ());
         return super.onInitialSpawn(worldIn, difficultyIn, reason, spawnDataIn, dataTag);
     }
 
