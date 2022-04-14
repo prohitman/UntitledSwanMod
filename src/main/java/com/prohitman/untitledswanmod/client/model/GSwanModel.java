@@ -1,7 +1,7 @@
 package com.prohitman.untitledswanmod.client.model;
 
 import com.prohitman.untitledswanmod.entity.SwanEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
@@ -23,7 +23,7 @@ public class GSwanModel extends AnimatedGeoModel<SwanEntity> {
 
     @Override
     public ResourceLocation getTextureLocation(SwanEntity swanEntity) {
-        if(!swanEntity.isChild()){
+        if(!swanEntity.isBaby()){
             switch (swanEntity.getSwanType()){
 
                 case 1:

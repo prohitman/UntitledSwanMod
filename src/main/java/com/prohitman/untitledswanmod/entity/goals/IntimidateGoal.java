@@ -1,8 +1,8 @@
 package com.prohitman.untitledswanmod.entity.goals;
 
+import com.mojang.math.Vector3d;
 import com.prohitman.untitledswanmod.entity.SwanEntity;
 import com.prohitman.untitledswanmod.init.ModSounds;
-import com.sun.javafx.geom.Vec3d;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPredicate;
 import net.minecraft.entity.LivingEntity;
@@ -10,6 +10,7 @@ import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.monster.RavagerEntity;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.ai.goal.Goal;
 
 import javax.naming.ldap.Control;
 import java.util.EnumSet;

@@ -32,6 +32,14 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.*;
+import net.minecraft.world.entity.ai.goal.BreedGoal;
+import net.minecraft.world.entity.ai.goal.FollowParentGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.TemptGoal;
+import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.server.ServerWorld;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -44,7 +52,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 import java.util.List;
 import java.util.Random;
 
-public class SwanEntity extends AnimalEntity implements IAnimatable {
+public class SwanEntity extends Animal implements IAnimatable {
 
     private final AnimationFactory factory = new AnimationFactory(this);
 
@@ -64,13 +72,13 @@ public class SwanEntity extends AnimalEntity implements IAnimatable {
     protected static final DataParameter<Byte> ANIMATION = EntityDataManager.createKey(SwanEntity.class, DataSerializers.BYTE);
     private static final DataParameter<Boolean> INTIMIDATING = EntityDataManager.createKey(SwanEntity.class, DataSerializers.BOOLEAN);
 
-    private static final Ingredient FOOD_ITEMS = Ingredient.fromItems(Items.CARROT, Items.POTATO, Items.BEETROOT, Items.SEAGRASS, Items.KELP);
+    private static final Ingredient FOOD_ITEMS = Ingredient.of(Items.CARROT, Items.POTATO, Items.BEETROOT, Items.SEAGRASS, Items.KELP);
     public float wingRotation;
     public float destPos;
     public float oFlapSpeed;
     public float oFlap;
     public float wingRotDelta = 1.0F;
-    public int timeUntilNextEgg = this.rand.nextInt(6000) + 6000;
+    public int timeUntilNextEgg = this.random.nextInt(6000) + 6000;
     public int animationTimer = 0;
 
     public SwanEntity(EntityType<? extends AnimalEntity> entity, World world) {
